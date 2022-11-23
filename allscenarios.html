@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ApexPlus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            list-style: none;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background: #1a1a1b;
+        }
+
+        .sidebar {
+            background: rgb(161, 175, 183);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 225px;
+            height: 100%;
+            padding: 20px 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 13px 30px;
+            color: rgb(10, 0, 0);
+            font-size: 18px;
+            position: relative;
+        }
+
+        .sidebar ul li a:hover {
+            color: #0c7db1;
+            background: rgb(227, 219, 219);
+            border-right: 2px solid rgb(5, 68, 104);
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            color: #0c7db1;
+            background: rgb(227, 219, 219);
+        }
+
+        .wrapper {
+            margin-top: 10px;
+            margin-left: 300px;
+            color: aliceblue;
+        }
+
+        .wrapper h2 {
+            display: inline-block;
+            margin-top: 30px;
+            margin-right: 16rem;
+        }
+
+        .new_scenario_btn,
+        .add_vehicle_btn,
+        .del_all_btn {
+            margin-top: 30px;
+            margin-right: 15px;
+            padding: 10px 10px;
+            color: rgb(255, 255, 255);
+            width: 150px;
+            border-radius: 5px;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .scnerio_table {
+            border-collapse: collapse;
+            width: 75%;
+        }
+
+        .scnerio_table tr {
+            border: 1px solid #ddd;
+        }
+
+        .scnerio_table tr th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: black;
+            color: white;
+            text-align: center;
+        }
+
+        .scnerio_table tr td {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: rgb(227, 219, 219);
+            color: black;
+            text-align: center;
+        }
+
+        .add_btn,
+        .edit_btn,
+        .del_btn {
+            border: none;
+            background-color: transparent;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="../Apex/home.html">
+                    <span class="item">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Apex/addscenario.html">
+                    <span class="item">Add Scenario</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Apex/allscenarios.html" class="active">
+                    <span class="item">All Scenarios</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Apex/vehicle.html">
+                    <span class="item">Add Vehicle</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="wrapper">
+        <h2>All Scenarios</h2>
+        <button type="button" style="background-color:rgb(56, 202, 30);" class="new_scenario_btn"
+            onclick="onAddNewScenario()">New Scenario</button>
+        <button type="button" style="background-color:rgb(212, 102, 42);" class="add_vehicle_btn"
+            onclick="onAddVehicle()">Add Vehicle</button>
+        <button type="button" style="background-color:rgb(31, 181, 183);" class="del_all_btn"
+            onclick="onDeleteAll()">Delete All</button>
+        <br />
+        <br />
+        <br />
+        <table cellspacing="2" class="scnerio_table">
+            <thead>
+                <tr>
+                    <th>Scenario ID</th>
+                    <th>Scenario Name</th>
+                    <th>Scenario Time</th>
+                    <th>Number of vehicles</th>
+                    <th>Add Vehicles</th>
+                    <th>Edit</th>
+                    <th>Delete</td>
+                </tr>
+            </thead>
+            <tbody id="table" class="scnerio_tbody">
+            </tbody>
+        </table>
+    </div>
+
+
+</body>
+
+<script>
+    (function () {
+        var scenarioList = JSON.parse(localStorage.getItem('scenarioList1'))
+        var rows = '';
+        for (var i = 0; i < scenarioList.length; i++) {
+            var index = parseInt(i) + 1;
+            rows += '<tr id = "row' + i + '"><td>' + index +
+                '</td><td>' + scenarioList[i].scenarioName +
+                '</td><td>' + scenarioList[i].scenarioTime +
+                '</td><td>' + 0 +
+                '</td><td>' + '<button type="button" value="Add" class="add_btn" onclick="onAddVehicle()"><i class="fa fa-plus" aria-hidden="true" style="font-size:24px;"></i>' +
+                '</td><td>' + '<button type="button" value="Edit" class="edit_btn" id="edit_button"  onclick="edit_row()"><i class="fa fa-pencil" aria-hidden="true" style="font-size:24px;"></i>' +
+                '</td><td>' + '<button type="button" value="Delete" class="del_btn" onclick="deleteRow(this)"><i class="fa fa-trash" aria-hidden="true" style="font-size:24px;"></i></td></button>' +
+                '</td></tr>';
+        }
+        document.getElementById('table').innerHTML = rows;
+    }());
+
+
+    function editRow(td) {
+        selectedRow = td.parentElement.parentElement;
+        document.getElementById("scenarioName").value = selectedRow.cells[0].innerHTML;
+    }
+
+
+    function deleteRow(button) {
+        const tr = button.parentNode.parentNode;
+        tr.parentNode.removeChild(tr);
+        localStorage.clear()
+    }
+
+    function onDeleteAll() {
+
+        while (table.rows.length > 0) {
+            table.deleteRow(0);
+            localStorage.clear()
+        }
+    }
+
+    function onAddVehicle() {
+        window.location.href = "vehicle.html";
+    }
+
+    function onAddNewScenario() {
+        window.location.href = "addscenario.html";
+    }
+</script>
+
+</html>

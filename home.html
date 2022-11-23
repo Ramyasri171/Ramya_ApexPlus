@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ApexPlus</title>
+    <style>
+        * {
+            list-style: none;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background: #1a1a1b;
+        }
+
+        .sidebar {
+            background: rgb(161, 175, 183);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 225px;
+            height: 100%;
+            padding: 20px 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 13px 30px;
+            color: rgb(10, 0, 0);
+            font-size: 18px;
+            position: relative;
+        }
+
+        .sidebar ul li a:hover {
+            color: #0c7db1;
+            background: rgb(227, 219, 219);
+            border-right: 2px solid rgb(5, 68, 104);
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            color: #0c7db1;
+            background: rgb(227, 219, 219);
+        }
+
+        .wrapper {
+            margin-top: 10px;
+            margin-left: 300px;
+            color: aliceblue;
+        }
+
+        select {
+            color: rgb(102, 95, 95);
+            background-color: #4e4e5251;
+            margin-top: 10px;
+            margin-right: 80px;
+            padding: 10px;
+            width: 180px;
+            height: 38px;
+            border: 1.5px solid rgb(71, 66, 66);
+            border-radius: 5px;
+        }
+
+        .simulation_table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .simulation_table tr {
+            border: 1px solid #ddd;
+        }
+
+        .simulation_table tr th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: black;
+            color: white;
+            text-align: center;
+        }
+
+        .simulation_table tr td {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: rgb(227, 219, 219);
+            color: black;
+            text-align: center;
+        }
+
+        .wrapper button {
+            color: rgb(255, 255, 255);
+            margin: 20px 10px 20px 0px;
+            width: 150px;
+            height: 35px;
+            border-radius: 5px;
+            float: right;
+        }
+    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="../Apex/home.html" class="active">
+                    <span class="item">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Apex/addscenario.html">
+                    <span class="item">Add Scenario</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Apex/allscenarios.html">
+                    <span class="item">All Scenarios</span>
+                </a>
+            </li>
+            <li>
+                <a href="../Apex/vehicle.html">
+                    <span class="item">Add Vehicle</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="wrapper">
+        <div>
+            <label for="Select Scenario">Scenario</label>
+        </div>
+        <select name="Select Scenario" id="selectScenario" onchange="onScenarioChange()">
+            <option value="0" selected disabled>Select Scenarios</option>
+        </select>
+
+        <br />
+        <br />
+        <table cellspacing="2" class="simulation_table">
+            <thead>
+                <tr>
+                    <th>S:No</th>
+                    <th>Scenario</th>
+                    <th>Vehicle Name</th>
+                    <th>Speed</th>
+                    <th>Position X</th>
+                    <th>Position Y</th>
+                    <th>Direction</th>
+                </tr>
+            </thead>
+            <tbody id="table" class="scnerio_tbody">
+            </tbody>
+        </table>
+        <button type="button" style="background-color:rgb(56, 202, 30);" onclick="onStartSimulation()">Start
+            Simulation</button>
+        <button type="button" style="background-color: rgb(31, 181, 183);" onclick="onStopSimulation()">Stop
+            Simulation</button>
+        <br /> <br />
+        <div id="myChart" style="width:100%; max-width:900px; height:500px;"></div>
+    </div>
+
+    <script>
+        (function () {
+            var scenarioList = JSON.parse(localStorage.getItem('scenarioList1'))
+            var scenarioComboBox = document.getElementById("selectScenario");
+            for (var i = 0; i < scenarioList.length; i++) {
+                var myOption = document.createElement("option");
+                myOption.text = scenarioList[i].scenarioName;
+                myOption.value = scenarioList[i].scenarioName;
+                scenarioComboBox.add(myOption);
+            }
+        }());
+
+        function onScenarioChange() {
+            var selectedOption = document.getElementById('selectScenario').value || ''
+            var rows = '', selectedVehiclesList;
+            if (selectedOption) {
+                var scenarioList = JSON.parse(localStorage.getItem('scenarioList1'))
+                for (var i = 0; i < scenarioList.length; i++) {
+                    if (scenarioList[i].scenarioName === selectedOption && scenarioList[i].vehicleList && scenarioList[i].vehicleList.length) {
+                        selectedVehiclesList = scenarioList[i].vehicleList;
+                        for (var j = 0; j < scenarioList[i].vehicleList.length; j++) {
+                            var index = parseInt(j) + 1;
+                            console.log(scenarioList[i].vehicleList[j].selectedScenario)
+                            rows += '<tr id = "row' + i + '">' +
+                                '</td><td>' + index +
+                                '</td><td>' + scenarioList[i].vehicleList[j].selectedScenario +
+                                '</td><td>' + scenarioList[i].vehicleList[j].vehicleName +
+                                '</td><td>' + scenarioList[i].vehicleList[j].speed +
+                                '</td><td>' + scenarioList[i].vehicleList[j].positionX +
+                                '</td><td>' + scenarioList[i].vehicleList[j].positionY +
+                                '</td><td>' + scenarioList[i].vehicleList[j].selectedDirection +
+                                '</td></tr>';
+                        }
+                    }
+                }
+            }
+            document.getElementById('table').innerHTML = rows;
+
+            google.charts.load('current', { packages: ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('number', 'Vehicle');
+                data.addColumn('number', 'Speed');
+
+                for (var i = 0; i < selectedVehiclesList.length; i++) {
+                    data.addRow([parseInt(selectedVehiclesList[i].positionX), parseInt(selectedVehiclesList[i].positionY)]);
+                }
+                var options = {
+                    title: 'Vehicle vs. Speed',
+                    hAxis: { title: 'Vehicle' },
+                    vAxis: { title: 'Speed' },
+                    backgroundColor: 'black',
+                    legend: 'none'
+                };
+
+                var chart = new google.visualization.ScatterChart(document.getElementById('myChart'));
+                chart.draw(data, options);
+            }
+        }
+
+    </script>
+</body>
+
+</html>
