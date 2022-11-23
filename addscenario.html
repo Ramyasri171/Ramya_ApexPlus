@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ApexPlus</title>
+    <style>
+        * {
+            list-style: none;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background: #000007;
+
+        }
+
+        .sidebar {
+            background: rgb(161, 175, 183);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 225px;
+            height: 100%;
+            padding: 20px 0;
+            transition: all 0.5s ease;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 13px 30px;
+            color: rgb(10, 0, 0);
+            font-size: 18px;
+            position: relative;
+        }
+
+        .sidebar ul li a:hover {
+            color: #0c7db1;
+            background: rgb(227, 219, 219);
+            border-right: 2px solid rgb(5, 68, 104);
+        }
+
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            color: #0c7db1;
+            background: rgb(227, 219, 219);
+        }
+
+        .wrapper {
+            margin-top: 10px;
+            margin-left: 300px;
+            color: aliceblue;
+        }
+
+        .wrapper h2 {
+            margin-top: 50px;
+        }
+
+        .Addingscenario {
+            margin-top: 25px;
+            margin-right: 520px;
+            padding: 20px 0px 20px 30px;
+            border: 1px solid rgb(10, 0, 0);
+            background-color: #4e4e5251;
+
+        }
+
+        .Addingscenario label {
+            margin: 10px;
+            margin-right: 160px;
+        }
+
+        .Addingscenario input {
+            margin: 5px;
+            margin-right: 80px;
+            padding: 8px 30px;
+            color: white;
+            border: 1.5px solid rgb(71, 66, 66);
+            border-radius: 5px;
+            background-color: #000007;
+        }
+
+        input:focus {
+            outline: none;
+            border: 1.5px solid red;
+        }
+
+        .wrapper button {
+            color: rgb(255, 255, 255);
+            margin: 20px 10px 20px 0px;
+            width: 80px;
+            height: 35px;
+            border-radius: 5px;
+        }
+
+        .validation {
+            color: red;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<script>
+    var scenarioList = [];
+
+    function onAddScenario() {
+        var scenarioName = document.getElementById('scenarioName').value || 'test';
+        var scenarioTime = document.getElementById('scenarioTime').value;
+        if (scenarioTime) {
+            scenarioList = JSON.parse(localStorage.getItem('scenarioList1')) || [];
+            scenarioList.push({ scenarioName, scenarioTime });
+            localStorage.setItem("scenarioList1", JSON.stringify(scenarioList));
+            window.location.href = "allscenarios.html";
+        }
+        else {
+            document.getElementById("scenarioTime").style.borderColor = "red";
+            document.getElementById('errorText').innerHTML = '<h6 style="color:red;"> Scenario is required </h6>';
+        }
+    }
+
+    function onResetScenario() {
+        document.getElementById('scenarioName').value = ''
+        document.getElementById('scenarioTime').value = ''
+    }
+
+    function onGoBack() {
+        window.location.href = "home.html";
+    }
+</script>
+
+<body>
+
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="./home.html">
+                    <span class="item">Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="./addscenario.html" class="active">
+                    <span class="item">Add Scenario</span>
+                </a>
+            </li>
+            <li>
+                <a href="./allscenarios.html">
+                    <span class="item">All Scenarios</span>
+                </a>
+            </li>
+            <li>
+                <a href="./vehicle.html">
+                    <span class="item">Add Vehicle</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="wrapper">
+        <h3>Scenario / add</h3>
+        <h2>Add Scenario</h2>
+        <div class="Addingscenario">
+
+            <form>
+                <div style="display: flex;">
+                    <div>
+                        <label for="Scenario Name">Scenario Name</label>
+                        <input type="text" id="scenarioName" name="Scenario Name" placeholder="Test Scenario" value="">
+                    </div>
+                    <div>
+                        <label for="Scenario Time">Scenario Time (seconds)</label>
+                        <input type="text" name="Scenario Time" placeholder="10" id="scenarioTime" value="" required>
+                        <span id="errorText"> </span>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        <button type="button" style="background-color:rgb(56, 202, 30);" onclick="onAddScenario()">Add</button>
+        <button type="button" style="background-color:rgb(212, 102, 42);" onclick="onResetScenario()">Reset</button>
+        <button type="button" style="background-color:rgb(31, 181, 183);" onclick="onGoBack()">Go Back</button>
+    </div>
+
+</body>
+
+</html>
